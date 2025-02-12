@@ -10,7 +10,6 @@ import {
   FileText,
   MapPin,
   Menu,
-  PlayIcon,
   UserCheck,
 } from 'lucide-react';
 import type React from 'react'; // Added import for React

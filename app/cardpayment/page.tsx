@@ -23,7 +23,7 @@ export default function PaymentForm() {
     setIsLoading(true)
     // Simulate OTP sending
     setTimeout(() => {
-      setIsLoading(false)
+    //  setIsLoading(false)
       setStep("otp")
     }, 1500)
   }

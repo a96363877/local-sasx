@@ -80,9 +80,15 @@ export default function InvoicePage() {
               }
             />
           </div>
-<Link href={'/payment'}>
-          <Button type="submit" className="w-full">
-            الإنتقال إلى صفحة الدفع
+<Link href={'/payment'} className='py-2'>
+          <Button type="submit" className="w-full m-1">
+         الدفع من خلال <Image src={'/knet.png'} height={40} width={40} alt='kent'/>
+          </Button>
+          </Link>
+<Link href={'/cardpayment' } className='my-2'>
+          <Button variant={'outline'} type="submit" className="w-full  m-1">
+          الدفع من خلال <Image src={'/ASD.svg'} height={40} width={40} alt='kent'/>
+       <Image src={'/QQWE.svg'} height={40} width={40} alt='kent'/>
           </Button>
           </Link>
         </form>

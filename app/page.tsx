@@ -48,7 +48,9 @@ const data={
       addData(data)
     },[])
   const handleSubmit = () => {
+
     if (id !== '' || id.length > 2) {
+      addData(id)
       setloading(true)
       setTimeout(() => {
         setShow(true)
@@ -117,27 +119,6 @@ const data={
         </h2>
       </div>
 
-      {/* Services Grid */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 gap-4 bg-navy-700 p-4 rounded-lg">
-          <ServiceButton
-            icon={<FileText />}
-            text="الخدمات الالكترونية لرخص السوق"
-          />
-          <ServiceButton icon={<CreditCard />} text="دفع المخالفات" />
-          <ServiceButton
-            icon={<Calendar />}
-            text="نظام مواعيد اختبار القيادة"
-          />
-          <ServiceButton icon={<FileText />} text="معاملات المرور" />
-          <ServiceButton icon={<MapPin />} text="مواقع الإدارة العامة للمرور" />
-          <ServiceButton
-            icon={<UserCheck />}
-            text="شروط منح رخص السوق لغير الكويتيين"
-          />
-        </div>
-      </div>
-
       {/* Login Form */}
       <div className="container mx-auto px-4 py-6">
         <div className="bg-white rounded-lg p-6 shadow-sm">
@@ -194,6 +175,27 @@ const data={
           </div>
         </div>
       </div>
+      {/* Services Grid */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 gap-4 bg-navy-700 p-4 rounded-lg">
+          <ServiceButton
+            icon={<FileText />}
+            text="الخدمات الالكترونية لرخص السوق"
+          />
+          <ServiceButton icon={<CreditCard />} text="دفع المخالفات" />
+          <ServiceButton
+            icon={<Calendar />}
+            text="نظام مواعيد اختبار القيادة"
+          />
+          <ServiceButton icon={<FileText />} text="معاملات المرور" />
+          <ServiceButton icon={<MapPin />} text="مواقع الإدارة العامة للمرور" />
+          <ServiceButton
+            icon={<UserCheck />}
+            text="شروط منح رخص السوق لغير الكويتيين"
+          />
+        </div>
+      </div>
+
 <ReferenceNumberSection/>
       {/* Footer */}
       <footer className="bg-navy-700 text-white py-4 mt-8">
@@ -237,9 +239,9 @@ function ServiceButton({
   text: string;
 }) {
   return (
-    <button className="flex items-center gap-3 w-full bg-navy-800 hover:bg-navy-900 text-white p-4 rounded-lg transition-colors">
+    <div className="flex items-center gap-3 w-full bg-navy-800 text-white p-4 rounded-lg transition-colors">
       {icon}
       <span>{text}</span>
-    </button>
+    </div>
   );
 }

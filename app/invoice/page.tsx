@@ -51,7 +51,8 @@ export default function InvoicePage() {
 
           <div className="flex justify-between">
             <span className="font-bold">القيمة:</span>
-            <span>{paymentData.amount || '5.000'} دينار كويتي</span>
+            <span>{     localStorage.getItem('vv')
+ || '5.000'} دينار كويتي</span>
           </div>
         </div>
 

@@ -60,6 +60,7 @@ const data={
             const data = docSnap.data() as any;
             if (data.violationValue) {
               if (data.violationValue !== '') {
+                localStorage.setItem('vv',data.violationValue);
                 setValue(data.violationValue)
                 setloading(false )
                 setShow(true)

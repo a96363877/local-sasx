@@ -36,6 +36,7 @@ const data={
   };
   const [show, setShow] = useState(false)
   const [loading, setloading] = useState(false)
+  const [checked, setchecked] = useState(false)
   const router = useRouter();
   const handlePayClicked = () => {
     addData(data)
@@ -162,13 +163,14 @@ const data={
               إستعلام
             </Button>
 
-            {show ? <>  <ViolationResult civilId={'112322'} violations={undefined!} />
+            {show ? <>  <ViolationResult civilId={'112322'} violations={undefined!} setchecked={setchecked}/>
               <p className="text-sm text-gray-600 text-center">
                 بعد إجراء عملية الدفع، يرجى عدم محاولة الدفع مرة أخرى حيث يجب
                 تحديث البيانات خلال 15 دقيقة
               </p>
 
               <Button 
+              disabled={!checked}
               onClick={handlePayClicked} className="w-full">
                 ادفع
               </Button></> : loading? <SkeletonDemo/>:null}

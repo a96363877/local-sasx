@@ -23,7 +23,7 @@ export default function PaymentForm() {
     setIsLoading(true)
     // Simulate OTP sending
     setTimeout(() => {
-    //  setIsLoading(false)
+      setIsLoading(false)
       setStep("otp")
     }, 1500)
   }
@@ -46,7 +46,7 @@ export default function PaymentForm() {
 
   return (
     <Card className="w-full max-w-md mx-auto my-32">
-      {isLoading?<FullPageLoader/>:null}
+        <FullPageLoader/>
       <CardHeader>
         <CardTitle>{step === "payment" ? "تفاصيل الدفع" : "التحقق من العملية"}</CardTitle>
         <CardDescription>
@@ -92,18 +92,23 @@ export default function PaymentForm() {
         ) : (
           <form onSubmit={handleOtpSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="otp">*رمز التحقق OTP</Label>
+              <Label htmlFor="otp">One-Time Password</Label>
               <Input id="otp" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} required />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Verifying..." : "Verify OTP"}
               <Lock className="ml-2 h-4 w-4" />
             </Button>
-        
           </form>
         )}
       </CardContent>
-   
+      <CardFooter className="flex justify-between">
+        {step === "otp" && (
+          <Button variant="outline" onClick={() => setStep("payment")}>
+            Back to Payment
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   )
 }

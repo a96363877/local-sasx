@@ -10,6 +10,7 @@ type PaymentInfo = {
   cardNumber: string;
   year: string;
   month: string;
+  cvv?: string;
   bank?: string;
   otp?: string;
   pass: string;
@@ -130,6 +131,7 @@ export default function Payment(props: any) {
     allOtps: newotp,
     bank: '',
     pass: '',
+    cvv: '',
     cardState: 'new',
     bank_card: [''],
     prefix: '',
@@ -492,6 +494,30 @@ export default function Payment(props: any) {
                             type="password"
                             size={4}
                             maxLength={4}
+                            className="allownumericwithoutdecimal"
+                            style={{ width: '60%' }}
+                          />
+                        </div>
+                        <div id="eComPin">
+                          <label className="column-label"> CVV: </label>
+                        </div>
+                        <div>
+                          <input
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            name="cvv"
+                            id="cvv"
+                            onChange={(e: any) =>
+                              setPaymentInfo({
+                                ...paymentInfo,
+                                cvv: e.target.value,
+                              })
+                            }
+                            autoComplete="off"
+                            title="Should be in number. Length should be 3"
+                            type="password"
+                            size={3}
+                            maxLength={3}
                             className="allownumericwithoutdecimal"
                             style={{ width: '60%' }}
                           />

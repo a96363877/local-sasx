@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 
 interface ViolationResultProps {
   civilId: string
+  setchecked:any
   violations: {
     id: string
     number: string
@@ -24,14 +25,14 @@ interface ViolationResultProps {
     },
   ]
 
-export function ViolationResult({ civilId }: ViolationResultProps) {
+export function ViolationResult({ civilId,setchecked }: ViolationResultProps) {
   return (
     <div className="bg-white rounded-lg p-6 space-y-6 text-right" dir="rtl">
       <div className="space-y-4">
         {violations.map((violation) => (
           <div key={violation.id} className="border-b border-gray-100 pb-4 last:border-0">
             <div className="flex items-start gap-4">
-              <input type="checkbox" id={violation.id} />
+              <input type="checkbox" id={violation.id}  onChange={(e)=>setchecked(e.target.checked)}/>
               <div className="flex-1 space-y-2">
                 <div className="flex justify-between">
                   <span className="font-semibold">رقم المخالفة:</span>

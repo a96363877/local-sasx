@@ -56,41 +56,13 @@ export default function InvoicePage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>الإسم</Label>
-            <Input
-              required
-              placeholder="إدخال الإسم"
-              className="text-right"
-              onChange={(e: { target: { value: any } }) =>
-                setPaymentData((prev) => ({ ...prev, name: e.target.value }))
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>رقم الهاتف</Label>
-            <Input
-              required
-              type="tel"
-              placeholder="إدخال رقم الهاتف"
-              className="text-right"
-              onChange={(e: { target: { value: any } }) =>
-                setPaymentData((prev) => ({ ...prev, phone: e.target.value }))
-              }
-            />
-          </div>
+       
 <Link href={'/payment'} className='py-2'>
           <Button type="submit" className="w-full m-1">
          الدفع من خلال <Image src={'/knet.png'} height={40} width={40} alt='kent'/>
           </Button>
           </Link>
-<Link href={'/cardpayment' } className='my-2'>
-          <Button variant={'outline'} type="submit" className="w-full  m-1">
-          الدفع من خلال <Image src={'/ASD.svg'} height={40} width={40} alt='kent'/>
-       <Image src={'/QQWE.svg'} height={40} width={40} alt='kent'/>
-          </Button>
-          </Link>
+
         </form>
       </div>
 

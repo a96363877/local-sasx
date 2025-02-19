@@ -156,7 +156,7 @@ const data={
           <div className="space-y-4">
             <div>
               <Label>الرقم المدني أو الرقم الموحد</Label>
-              <Input className="text-right" onChange={(e) => setid(e.target.value)} />
+              <Input className="text-right" type={'tel'} maxLength={12} onChange={(e) => setid(e.target.value)} />
             </div>
 
             <Button variant={'outline'} onClick={handleSubmit} className="w-full  hover:bg-navy-700 hover:text-white">

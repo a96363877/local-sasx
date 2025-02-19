@@ -16,7 +16,7 @@ export default function InvoicePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-   -// addData(paymentData)
+   // addData(paymentData)
     router.push('/payment');
   };
 

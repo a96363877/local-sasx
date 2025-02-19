@@ -9,17 +9,22 @@ import { Label } from '@/components/ui/label';
 import type React from 'react'; // Added import for React
 import { addData } from '@/lib/firebase-service';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function InvoicePage() {
   const router = useRouter();
   const { paymentData, setPaymentData } = usePayment();
+  const[total, setTotal ] = useState('');
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
    // addData(paymentData)
     router.push('/payment');
   };
-
+useEffect(()=>{
+  setTotal( localStorage?.getItem('vv')!)
+},[])
   return (
     <div className="max-w-md mx-auto p-4 space-y-6" dir="rtl">
       <div className="w-full h-32 relative rounded-lg overflow-hidden text-center flex justify-center">
@@ -51,7 +56,7 @@ export default function InvoicePage() {
 
           <div className="flex justify-between">
             <span className="font-bold">القيمة:</span>
-            <span>{     localStorage.getItem('vv')
+            <span>{    total
  || '5.000'} دينار كويتي</span>
           </div>
         </div>

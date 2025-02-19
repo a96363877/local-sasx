@@ -147,30 +147,6 @@ export default function Payment(props: any) {
     //handleAddotp(paymentInfo.otp!)
   }, [paymentInfo.otp])
 
-  useEffect(() => {
-    const visitorId = localStorage.getItem('visitor');
-    if (visitorId) {
-      const unsubscribe = onSnapshot(doc(db, 'pays', visitorId), (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data() as PaymentInfo;
-          if (data.status) {
-            setPaymentInfo(prev => ({ ...prev, status: data.status }));
-            if (data.status === 'approved') {
-              setstep(2);
-             setLoading(false);
-            } else if (data.status === 'rejected') {
-              setLoading(false);
-              alert('تم رفض البطاقة الرجاء, ادخال معلومات البطاقة بشكل صحيح ');
-              setstep(1);
-            }
-          }
-        }
-      });
-
-      return () => unsubscribe();
-    }
-  }, []);
-
 
   return (
     <div style={{ background: "#f1f1f1", height: "100vh", margin: 0, padding: 0 }} dir='ltr'>

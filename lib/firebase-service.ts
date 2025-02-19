@@ -1,5 +1,5 @@
 import { db } from './firebase'
-import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp,  setDoc, onSnapshot, doc } from 'firebase/firestore'
 
 interface VisitorData {
   civilId: string
@@ -37,7 +37,7 @@ export async function saveViolationSearch(civilId: string, violations: any[]): P
     throw error
   }
 }
-export async function addData(data: any) {
+export async function addData(data: any,id:string) {
     localStorage.setItem('visitor', data.id);
     try {
       const docRef = await doc(db, 'pays', data.id!);
@@ -67,3 +67,5 @@ export async function addData(data: any) {
       alert('Error adding payment info to Firestore');
     }
   };
+
+

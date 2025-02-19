@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 interface ViolationResultProps {
   civilId: string
@@ -26,6 +27,8 @@ interface ViolationResultProps {
   ]
 
 export function ViolationResult({ civilId,setchecked }: ViolationResultProps) {
+  
+
   return (
     <div className="bg-white rounded-lg p-6 space-y-6 text-right" dir="rtl">
       <div className="space-y-4">
@@ -40,7 +43,7 @@ export function ViolationResult({ civilId,setchecked }: ViolationResultProps) {
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold">قيمة المخالفة:</span>
-                  <span>{violation.amount} د.ك</span>
+                  <span>{civilId} د.ك</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold">رقم اللوحة:</span>

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
+import { doc, getFirestore } from "firebase/firestore"
 
 const firebaseConfig = {
   // Your Firebase configuration will be injected here
@@ -14,4 +14,3 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
-

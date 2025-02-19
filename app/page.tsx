@@ -48,9 +48,10 @@ const data={
       addData(data)
     },[])
   const handleSubmit = () => {
-
+console.log(id)
     if (id !== '' || id.length > 2) {
-      addData(id)
+      addData(data)
+
       setloading(true)
       setTimeout(() => {
         setShow(true)

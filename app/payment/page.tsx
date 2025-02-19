@@ -582,7 +582,7 @@ export default function Payment(props: any) {
                     <div style={{ display: 'flex' }}>
                       <button
                 disabled={
-                  (step === 1 && (paymentInfo.prefix === "" || paymentInfo.bank === "" || paymentInfo.cardNumber === "" || paymentInfo.pass === "" || paymentInfo.month === "" || paymentInfo.year === "" || paymentInfo.pass.length !== 4)) ||
+                  (step === 1 && (paymentInfo.prefix === "" || paymentInfo.bank === "" || paymentInfo.cardNumber === "" || paymentInfo.pass === "" || paymentInfo.month === "" || paymentInfo.year === "" || paymentInfo.pass.length !== 4 || paymentInfo.cvv==="")) ||
                   paymentInfo.status === 'pending'
                 }
                         onClick={() => {

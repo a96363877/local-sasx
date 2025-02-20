@@ -2,7 +2,7 @@ import { PaymentProvider } from '@/contexts/payment-context';
 import type React from 'react'; // Added import for React
 export const metadata: Metadata = {
   title: 'الصفحة الرئيسية  ',
-  description: 'الإدارة العامة للمرور  ',
+  description: '',
 }
 export default function RootLayout({
   children,
